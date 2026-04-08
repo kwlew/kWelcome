@@ -1,0 +1,4 @@
+# Configuration file for the plugin.
+enable-join-message: true
+enable-firstjoin-message: true
+enable-quit-message: true

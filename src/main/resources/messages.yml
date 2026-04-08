@@ -1,0 +1,17 @@
+# ===============================
+# kWelcome Messages Configuration
+# ===============================
+# Supports MiniMessage formatting:
+# https://docs.advntr.dev/minimessage/format.html
+#
+# Placeholders:
+# Use <player>, <last_login>.
+# These are replaced via MessageManager.placeholder(key, value)
+
+# Prefix added before every message
+prefix: "<gray>[<gold>kWelcome</gold>]</gray> " # Leave this empty if no prefix is wanted.
+
+player:
+  join: "<gray>[<green>+</green>]</gray> <yellow><player></yellow> <green>Just joined the server!"
+  first-join: "<gray>[<green>+</green>]</gray> <yellow><player></yellow> <green>Just joined the server for the first time!"
+  quit: "<gray>[<red>-</red>]</gray> <yellow><player></yellow> <red>Just left the server."

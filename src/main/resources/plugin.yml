@@ -1,0 +1,23 @@
+name: kWelcome
+version: ${version}
+description: A lightweight plugin that manages customizable join and quit messages, including first-time player joins.
+
+main: dev.kwlew.kwelcome.kWelcome
+api-version: "1.21"
+
+author: kwlew
+website: https://kwlew.dev
+
+load: POSTWORLD
+
+commands:
+  kwelcome:
+    description: Primary command for managing the kWelcome plugin
+    usage: /kwelcome reload
+    permission: kwelcome.reload
+    permission-message: You do not have permission to use this command.
+
+permissions:
+  kwelcome.reload:
+    description: Allows reloading the plugin configuration and messages
+    default: op
