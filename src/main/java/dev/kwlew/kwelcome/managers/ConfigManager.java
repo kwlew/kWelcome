@@ -23,10 +23,6 @@ public class ConfigManager {
         this.config = plugin.getConfig();
     }
 
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
     public boolean isJoinMessageEnabled() {
         return config.getBoolean("enable-join-message");
     }
