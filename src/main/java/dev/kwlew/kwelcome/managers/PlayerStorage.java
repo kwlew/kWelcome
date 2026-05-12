@@ -11,6 +11,8 @@ import java.util.UUID;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class PlayerStorage {
 
+    public record LoginState(boolean firstJoin, long previousLogin) {}
+
     private final File file;
     private FileConfiguration config;
 
@@ -50,22 +52,22 @@ public class PlayerStorage {
 
     /**
      * Handles a player login.
-     * Returns TRUE if this is the first time the player joined.
+     * Returns whether the player is joining for the first time and their previous login timestamp.
      */
-    public boolean handleLogin(UUID uuid) {
-        String path = path(uuid);
+    public LoginState handleLogin(UUID uuid) {
+        String playerPath = path(uuid);
 
-        long previousLogin = config.getLong(path + ".last-login", -1);
+        long previousLogin = config.getLong(playerPath + ".last-login", -1);
 
         boolean firstJoin = (previousLogin == -1);
 
         // Store values
-        config.set(path + ".first-join", firstJoin);
-        config.set(path + ".last-login", System.currentTimeMillis());
+        config.set(playerPath + ".first-join", firstJoin);
+        config.set(playerPath + ".last-login", System.currentTimeMillis());
 
         save();
 
-        return firstJoin;
+        return new LoginState(firstJoin, previousLogin);
     }
 
     public boolean isFirstJoin(UUID uuid) {

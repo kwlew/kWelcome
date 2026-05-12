@@ -15,3 +15,11 @@ player:
   join: "<gray>[<green>+</green>]</gray> <yellow><player></yellow> <green>joined the server!"
   first-join: "<gray>[<green>+</green>]</gray> <yellow><player></yellow> <green>joined the server for the first time!"
   quit: "<gray>[<red>-</red>]</gray> <yellow><player></yellow> <red>left the server."
+
+misc:
+  unknown-last-login: "unknown"
+
+command:
+  usage: "<red>Usage: /kwelcome reload"
+  no-permission: "<red>You do not have permission to use this command."
+  reload-success: "<green>Reloaded config, messages and player data cache."

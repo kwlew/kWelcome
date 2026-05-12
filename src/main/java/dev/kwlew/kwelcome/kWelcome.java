@@ -5,11 +5,11 @@ import dev.kwlew.kwelcome.listeners.ListenerManager;
 import dev.kwlew.kwelcome.managers.ConfigManager;
 import dev.kwlew.kwelcome.managers.MessageManager;
 import dev.kwlew.kwelcome.managers.PlayerStorage;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Objects;
-
 public final class kWelcome extends JavaPlugin {
+    private static final int BSTATS_PLUGIN_ID = 31271;
 
     private ConfigManager configManager;
     private MessageManager messageManager;
@@ -27,16 +27,24 @@ public final class kWelcome extends JavaPlugin {
         ListenerManager listenerManager = new ListenerManager(this);
         listenerManager.registerAll();
 
-        Objects.requireNonNull(getCommand("kwelcome")).setExecutor(new kWelcomeCommand(this));
+        if (getCommand("kwelcome") == null) {
+            throw new IllegalStateException("Command 'kwelcome' is missing from plugin.yml");
+        }
+        getCommand("kwelcome").setExecutor(new kWelcomeCommand(this));
+
+        new Metrics(this, BSTATS_PLUGIN_ID);
 
         logStartupTime(getTime());
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("\u001B[36mDisabling kWelcome...\u001B[0m");
+        getLogger().info("Disabling kWelcome...");
 
         saveConfig();
+        if (playerStorage != null) {
+            playerStorage.save();
+        }
     }
 
     private void initManagers() {
@@ -50,8 +58,7 @@ public final class kWelcome extends JavaPlugin {
     }
 
     private void logStartupTime(long time) {
-        getLogger().info("\u001B[36mkWelcome enabled! \u001B[90m(Took \u001B[32m"
-                + time + "ms\u001B[90m)\u001B[0m");
+        getLogger().info("kWelcome enabled in " + time + "ms.");
     }
 
     private long getTime() {
@@ -62,7 +69,7 @@ public final class kWelcome extends JavaPlugin {
         return configManager;
     }
 
-    public  MessageManager getMessageManager() {
+    public MessageManager getMessageManager() {
         return messageManager;
     }
 

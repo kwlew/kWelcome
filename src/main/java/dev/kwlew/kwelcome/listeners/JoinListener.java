@@ -1,11 +1,13 @@
 package dev.kwlew.kwelcome.listeners;
 
 import dev.kwlew.kwelcome.kWelcome;
+import dev.kwlew.kwelcome.managers.PlayerStorage;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class JoinListener implements Listener {
@@ -24,25 +26,27 @@ public class JoinListener implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
-        long lastJoin = plugin.getPlayerStorage().getLastLogin(playerId);
-
-        boolean firstJoin = plugin.getPlayerStorage().handleLogin(playerId);
+        PlayerStorage.LoginState loginState = plugin.getPlayerStorage().handleLogin(playerId);
 
         boolean joinMessageEnabled = plugin.getConfigManager().isJoinMessageEnabled();
-        boolean isFirstEnabled = plugin.getConfigManager().ifFirstJoinMessageIsEnabled();
+        boolean isFirstEnabled = plugin.getConfigManager().isFirstJoinMessageEnabled();
 
-        if (firstJoin && isFirstEnabled) {
+        if (loginState.firstJoin() && isFirstEnabled) {
             plugin.getMessageManager().broadcast("player.first-join", plugin.getMessageManager().placeholder("player", player.getName()));
         }
         else if (joinMessageEnabled) {
-            plugin.getMessageManager().broadcast("player.join", plugin.getMessageManager().placeholder("player", player.getName()), plugin.getMessageManager().placeholder("last_login", formatTime(lastJoin)));
+            plugin.getMessageManager().broadcast(
+                    "player.join",
+                    plugin.getMessageManager().placeholder("player", player.getName()),
+                    plugin.getMessageManager().placeholder("last_login", formatTime(loginState.previousLogin()))
+            );
         }
     }
 
     private String formatTime(long millis) {
-        return java.time.format.DateTimeFormatter
-                .ofPattern("yyyy-MM-dd HH:mm:ss")
-                .withZone(java.time.ZoneId.systemDefault())
-                .format(java.time.Instant.ofEpochMilli(millis));
+        if (millis < 0) {
+            return plugin.getMessageManager().getRaw("misc.unknown-last-login", "unknown");
+        }
+        return plugin.getConfigManager().getLastLoginFormatter().format(Instant.ofEpochMilli(millis));
     }
 }
