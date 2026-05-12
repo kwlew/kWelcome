@@ -2,3 +2,7 @@
 enable-join-message: true
 enable-firstjoin-message: true
 enable-quit-message: true
+
+last-login:
+  format: "yyyy-MM-dd HH:mm:ss"
+  zone: "system" # Use a valid ZoneId (e.g. "America/Sao_Paulo") or "system"

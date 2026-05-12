@@ -1,8 +1,6 @@
 package dev.kwlew.kwelcome.command;
 
 import dev.kwlew.kwelcome.kWelcome;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,27 +17,21 @@ public class kWelcomeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, String[] args) {
 
-        if (args.length == 0) {
-            sender.sendMessage("§cUsage: /kwelcome reload");
+        if (args.length != 1 || !args[0].equalsIgnoreCase("reload")) {
+            plugin.getMessageManager().send(sender, "command.usage");
             return true;
         }
 
-        if (args[0].equalsIgnoreCase("reload")) {
-
-            if (!sender.hasPermission("kwelcome.reload")) {
-                sender.sendMessage(Component.text("[kWelcome] No permission to use this command!", NamedTextColor.RED));
-                return true;
-            }
-
-            plugin.getConfigManager().reloadConfig();
-            plugin.getMessageManager().reload();
-            plugin.getPlayerStorage().reload();
-
-            sender.sendMessage(Component.text("[kWelcome] Reloaded!", NamedTextColor.GREEN));
+        if (!sender.hasPermission("kwelcome.reload")) {
+            plugin.getMessageManager().send(sender, "command.no-permission");
             return true;
         }
 
-        sender.sendMessage(Component.text("[kWelcome] Usage: /kwelcome reload", NamedTextColor.RED));
+        plugin.getConfigManager().reloadConfig();
+        plugin.getMessageManager().reload();
+        plugin.getPlayerStorage().reload();
+
+        plugin.getMessageManager().send(sender, "command.reload-success");
         return true;
     }
 }

@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -48,10 +49,7 @@ public class MessageManager {
     // BASIC MESSAGE
     // ======================
     public Component get(String path) {
-        String msg = config.getString(path);
-        if (msg == null) msg = "<red>Missing message: " + path;
-
-        return prefixComponent.append(miniMessage.deserialize(msg));
+        return get(path, TagResolver.empty());
     }
 
     // ======================
@@ -77,6 +75,10 @@ public class MessageManager {
         );
     }
 
+    public String getRaw(String path, String fallback) {
+        return config.getString(path, fallback);
+    }
+
     // ======================
     // SEND METHODS
     // ======================
@@ -86,6 +88,14 @@ public class MessageManager {
 
     public void send(Player player, String path, TagResolver... resolvers) {
         player.sendMessage(get(path, resolvers));
+    }
+
+    public void send(CommandSender sender, String path) {
+        sender.sendMessage(get(path));
+    }
+
+    public void send(CommandSender sender, String path, TagResolver... resolvers) {
+        sender.sendMessage(get(path, resolvers));
     }
 
     // ======================
