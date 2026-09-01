@@ -3,7 +3,7 @@ version: ${version}
 description: A lightweight plugin that manages customizable join and quit messages, including first-time player joins.
 
 main: dev.kwlew.kwelcome.kWelcome
-api-version: "1.21"
+api-version: "1.18"
 
 author: kwlew
 website: https://kwlew.dev

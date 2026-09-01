@@ -2,11 +2,14 @@ package dev.kwlew.kwelcome.command;
 
 import dev.kwlew.kwelcome.kWelcome;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.jspecify.annotations.NonNull;
+import org.bukkit.command.TabExecutor;
 
-public class kWelcomeCommand implements CommandExecutor {
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
+public class kWelcomeCommand implements TabExecutor {
 
     private final kWelcome plugin;
 
@@ -15,7 +18,7 @@ public class kWelcomeCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (args.length != 1 || !args[0].equalsIgnoreCase("reload")) {
             plugin.getMessageManager().send(sender, "command.usage");
@@ -33,5 +36,16 @@ public class kWelcomeCommand implements CommandExecutor {
 
         plugin.getMessageManager().send(sender, "command.reload-success");
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1
+                && sender.hasPermission("kwelcome.reload")
+                && "reload".startsWith(args[0].toLowerCase(Locale.ROOT))) {
+            return List.of("reload");
+        }
+
+        return Collections.emptyList();
     }
 }

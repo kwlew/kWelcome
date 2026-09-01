@@ -6,10 +6,12 @@ import dev.kwlew.kwelcome.managers.ConfigManager;
 import dev.kwlew.kwelcome.managers.MessageManager;
 import dev.kwlew.kwelcome.managers.PlayerStorage;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class kWelcome extends JavaPlugin {
     private static final int BSTATS_PLUGIN_ID = 31271;
+    private static final long PLAYER_DATA_SAVE_INTERVAL_TICKS = 20L * 60L;
 
     private ConfigManager configManager;
     private MessageManager messageManager;
@@ -27,10 +29,16 @@ public final class kWelcome extends JavaPlugin {
         ListenerManager listenerManager = new ListenerManager(this);
         listenerManager.registerAll();
 
-        if (getCommand("kwelcome") == null) {
+        PluginCommand command = getCommand("kwelcome");
+        if (command == null) {
             throw new IllegalStateException("Command 'kwelcome' is missing from plugin.yml");
         }
-        getCommand("kwelcome").setExecutor(new kWelcomeCommand(this));
+
+        kWelcomeCommand commandHandler = new kWelcomeCommand(this);
+        command.setExecutor(commandHandler);
+        command.setTabCompleter(commandHandler);
+
+        startPlayerDataAutoSave();
 
         new Metrics(this, BSTATS_PLUGIN_ID);
 
@@ -51,6 +59,15 @@ public final class kWelcome extends JavaPlugin {
         this.configManager = new ConfigManager(this);
         this.messageManager = new MessageManager(this);
         this.playerStorage = new PlayerStorage(this);
+    }
+
+    private void startPlayerDataAutoSave() {
+        getServer().getScheduler().runTaskTimer(
+                this,
+                () -> playerStorage.save(),
+                PLAYER_DATA_SAVE_INTERVAL_TICKS,
+                PLAYER_DATA_SAVE_INTERVAL_TICKS
+        );
     }
 
     private void startTime() {

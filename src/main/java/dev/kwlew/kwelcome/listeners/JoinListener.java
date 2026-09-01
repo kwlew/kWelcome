@@ -26,7 +26,10 @@ public class JoinListener implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
-        PlayerStorage.LoginState loginState = plugin.getPlayerStorage().handleLogin(playerId);
+        PlayerStorage.LoginState loginState = plugin.getPlayerStorage().handleLogin(
+                playerId,
+                !player.hasPlayedBefore()
+        );
 
         boolean joinMessageEnabled = plugin.getConfigManager().isJoinMessageEnabled();
         boolean isFirstEnabled = plugin.getConfigManager().isFirstJoinMessageEnabled();

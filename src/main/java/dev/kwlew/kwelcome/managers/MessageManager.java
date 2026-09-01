@@ -1,9 +1,6 @@
 package dev.kwlew.kwelcome.managers;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,7 +12,7 @@ import java.io.File;
 public class MessageManager {
 
     private final JavaPlugin plugin;
-    private final MiniMessage miniMessage = MiniMessage.miniMessage();
+    private final MessageRenderer.Renderer renderer = MessageRenderer.compatibleRenderer();
     private Component prefixComponent;
 
     private FileConfiguration config;
@@ -38,7 +35,7 @@ public class MessageManager {
         config = YamlConfiguration.loadConfiguration(file);
 
         String prefix = config.getString("prefix", "");
-        prefixComponent = miniMessage.deserialize(prefix);
+        prefixComponent = renderer.render(prefix);
     }
 
     public void reload() {
@@ -49,7 +46,7 @@ public class MessageManager {
     // BASIC MESSAGE
     // ======================
     public Component get(String path) {
-        return get(path, TagResolver.empty());
+        return get(path, new Placeholder[0]);
     }
 
     // ======================
@@ -59,19 +56,19 @@ public class MessageManager {
         player.sendActionBar(get(path));
     }
 
-    public void sendActionBar(Player player, String path, TagResolver... resolvers) {
-        player.sendActionBar(get(path, resolvers));
+    public void sendActionBar(Player player, String path, Placeholder... placeholders) {
+        player.sendActionBar(get(path, placeholders));
     }
 
     // ======================
     // WITH PLACEHOLDERS
     // ======================
-    public Component get(String path, TagResolver... resolvers) {
+    public Component get(String path, Placeholder... placeholders) {
         String msg = config.getString(path);
         if (msg == null) msg = "<red>Missing message: " + path;
 
         return prefixComponent.append(
-                miniMessage.deserialize(msg, TagResolver.resolver(resolvers))
+                renderer.render(msg, placeholders)
         );
     }
 
@@ -86,16 +83,16 @@ public class MessageManager {
         player.sendMessage(get(path));
     }
 
-    public void send(Player player, String path, TagResolver... resolvers) {
-        player.sendMessage(get(path, resolvers));
+    public void send(Player player, String path, Placeholder... placeholders) {
+        player.sendMessage(get(path, placeholders));
     }
 
     public void send(CommandSender sender, String path) {
         sender.sendMessage(get(path));
     }
 
-    public void send(CommandSender sender, String path, TagResolver... resolvers) {
-        sender.sendMessage(get(path, resolvers));
+    public void send(CommandSender sender, String path, Placeholder... placeholders) {
+        sender.sendMessage(get(path, placeholders));
     }
 
     // ======================
@@ -105,11 +102,13 @@ public class MessageManager {
         org.bukkit.Bukkit.broadcast(get(path));
     }
 
-    public void broadcast(String path, TagResolver... resolvers) {
-        org.bukkit.Bukkit.broadcast(get(path, resolvers));
+    public void broadcast(String path, Placeholder... placeholders) {
+        org.bukkit.Bukkit.broadcast(get(path, placeholders));
     }
 
-    public TagResolver placeholder(String key, String value) {
-        return Placeholder.unparsed(key, value);
+    public Placeholder placeholder(String key, String value) {
+        return new Placeholder(key, value);
     }
+
+    public record Placeholder(String key, String value) {}
 }
